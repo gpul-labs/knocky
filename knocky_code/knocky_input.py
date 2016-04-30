@@ -37,6 +37,7 @@ def getKey():
     mTime = time.time()
     isFirst = True
     passWd = []
+    lin = ''
     while True:
         ready = select.select([inputDevice], [], [], 6)
         if inputDevice in ready[0]:
@@ -62,6 +63,7 @@ def getKey():
                   pass
                 except IndexError:
                   pass
+                lin = ''
         else:
             lTime = time.time() - mTime + mInterval
             if mVal and (lTime > minSensivity):
