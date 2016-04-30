@@ -40,26 +40,28 @@ def getKey():
     while True:
         ready = select.select([inputDevice], [], [], 6)
         if inputDevice in ready[0]:
-            lin = inputDevice.readline().replace('\n', '')
-            try:
-              lTime = 0
-              if ':' in lin:
-                  vals = map(lambda x: x.strip(), lin.split(':'))
-                  if vals[0][0]=='V':
-                    mVal = max(mVal, int(vals[1]))
-                  elif vals[0][0]=='D':
-                    if not mInterval:
-                        mInterval += int(vals[1])/1000.0
-                    lTime = time.time() - mTime + mInterval
-              if mVal and (lTime > minSensivity):
-                  passWd.append((mVal, lTime if isFirst else 0))
-                  mVal = 0
-                  mInterval = 0
-                  mTime = time.time()
-            except ValueError:
-              pass
-            except IndexError:
-              pass
+            lin += inputDevice.readline()
+            if '\n' in lin:
+                lin = lin.replace('\n', '')
+                try:
+                  lTime = 0
+                  if ':' in lin:
+                      vals = map(lambda x: x.strip(), lin.split(':'))
+                      if vals[0][0]=='V':
+                        mVal = max(mVal, int(vals[1]))
+                      elif vals[0][0]=='D':
+                        if not mInterval:
+                            mInterval += int(vals[1])/1000.0
+                        lTime = time.time() - mTime + mInterval
+                  if mVal and (lTime > minSensivity):
+                      passWd.append((mVal, lTime if isFirst else 0))
+                      mVal = 0
+                      mInterval = 0
+                      mTime = time.time()
+                except ValueError:
+                  pass
+                except IndexError:
+                  pass
         else:
             lTime = time.time() - mTime + mInterval
             if mVal and (lTime > minSensivity):
