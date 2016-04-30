@@ -14,36 +14,49 @@
 */
 
 int pinPiezo = A0;
+int pinRele = 8;
 int oldValue = 10;
+int duration = 0;
 
 void setup() {
   Serial.begin(9600);
+  Serial.setTimeout(200);
   pinMode(pinPiezo, INPUT);
+  pinMode(pinRele, OUTPUT);
 }
 
 void loop() {
   int newValue = 0;
   int maxValue = 0;
-  int duration = 0;
-  long ardTime = 0;
+  String answer = "";
 
-  ardTime = millis();
+  answer = Serial.readString();
+
+  if (answer == "open") {
+    Serial.println("La puerta se abre");
+    digitalWrite(pinRele, HIGH);
+  }
 
   newValue = analogRead(pinPiezo);
-  //Serial.println(ardTime + "\t" + newValue);
 
-  if (newValue < 10) {
-    oldValue = 10;
+  if (newValue != 10) {
     duration++;
-  } else if (newValue > 10) {
+  }
+
+  if (newValue < 10) { //Evitar ruido
+    oldValue = 10;
+  } else if (newValue > 10) { //Se toca
     if (newValue > oldValue) {
       oldValue = newValue;
     } else if (newValue < oldValue) {
       maxValue = oldValue;
 
-      Serial.println("Valor maximo: " + (String) oldValue);
-      Serial.println("Duracion: " + (String) duration);
-      duration = 0;
+      if (newValue != maxValue) { //Si cambia el valor maximo
+        Serial.println("Valor maximo: " + (String) oldValue);
+        Serial.println("Duracion: " + (String) duration);
+        //delay(250);
+        duration = 0;
+      }
     }
   }
 
